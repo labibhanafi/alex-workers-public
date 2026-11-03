@@ -1,0 +1,24 @@
+name: alex-worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Shell command to run on the runner"
+        required: true
+        default: "echo hello from alex-worker"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - name: Runner specs
+        run: |
+          echo "cpu=$(nproc)"
+          free -m | awk '/^Mem:/{print "ram_mb="$2}'
+          df -h / | tail -1 | awk '{print "disk="$2}'
+          uname -sr
+      - name: Task
+        run: ${{ inputs.command }}
